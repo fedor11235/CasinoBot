@@ -1,5 +1,39 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
+def get_main_menu_keyboard() -> InlineKeyboardMarkup:
+    buttons = [
+        [
+            InlineKeyboardButton(text="🎲 Играть", callback_data="play"),
+            InlineKeyboardButton(text="👤 Профиль", callback_data="profile")
+        ],
+        [
+            InlineKeyboardButton(text="📖 Правила", callback_data="rules")
+        ]
+    ]
+    return InlineKeyboardMarkup(inline_keyboard=buttons)
+
+def get_profile_keyboard() -> InlineKeyboardMarkup:
+    buttons = [
+        [
+            InlineKeyboardButton(text="💳 Внести оплату", callback_data="payment")
+        ],
+        [
+            InlineKeyboardButton(text="📱 Обратная связь", url="https://t.me/monomomn")
+        ],
+        [
+            InlineKeyboardButton(text="◀️ Назад в меню", callback_data="main_menu")
+        ]
+    ]
+    return InlineKeyboardMarkup(inline_keyboard=buttons)
+
+def get_rules_keyboard() -> InlineKeyboardMarkup:
+    buttons = [
+        [
+            InlineKeyboardButton(text="◀️ Назад в меню", callback_data="main_menu")
+        ]
+    ]
+    return InlineKeyboardMarkup(inline_keyboard=buttons)
+
 main_menu_keyboard = InlineKeyboardMarkup(
     inline_keyboard=[
         [
