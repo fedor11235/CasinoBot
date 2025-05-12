@@ -1,6 +1,5 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-# Главное меню
 main_menu_keyboard = InlineKeyboardMarkup(
     inline_keyboard=[
         [
@@ -14,7 +13,6 @@ main_menu_keyboard = InlineKeyboardMarkup(
     ]
 )
 
-# Клавиатура маршрутов
 routes_keyboard = InlineKeyboardMarkup(
     inline_keyboard=[
         [
@@ -31,7 +29,6 @@ routes_keyboard = InlineKeyboardMarkup(
     ]
 )
 
-# Клавиатура гайдов
 guides_keyboard = InlineKeyboardMarkup(
     inline_keyboard=[
         [

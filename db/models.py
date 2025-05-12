@@ -9,8 +9,12 @@ import logging
 import os
 from sqlalchemy import inspect
 from sqlalchemy import text
+from dotenv import load_dotenv
 
-# Настройка логирования
+load_dotenv()
+
+DATABASE_URL = os.getenv('DATABASE_URL')
+
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -21,12 +25,10 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Создаем базовый класс для моделей
+
 Base = declarative_base()
 
-# Создаем движок базы данных
-db_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'bot.db')
-engine = create_engine(f'sqlite:///{db_path}', echo=True)
+engine = create_engine(DATABASE_URL)
 
 # Создаем сессию
 Session = sessionmaker(bind=engine)
@@ -39,7 +41,7 @@ class User(Base):
     telegram_id = Column(BigInteger, unique=True, nullable=False)
     name = Column(String(255), nullable=False)
     age = Column(Integer)
-    stars = Column(Float, default=100.0)  # Начальный баланс 100 Stars
+    stars = Column(Float, default=100.0)
     wins = Column(Integer, default=0)
     losses = Column(Integer, default=0)
     is_vip = Column(Boolean, default=False)
@@ -47,7 +49,7 @@ class User(Base):
     referred_by = Column(BigInteger, ForeignKey('users.telegram_id'))
     daily_streak = Column(Integer, default=0)
     last_daily = Column(DateTime)
-    last_free_stars_claim = Column(DateTime)  # Добавляем новое поле для отслеживания времени последнего получения бонуса
+    last_free_stars_claim = Column(DateTime) 
     created_at = Column(DateTime, default=datetime.now)
 
     def __init__(self, telegram_id: int, name: str, stars: float = 100.0):
@@ -57,7 +59,6 @@ class User(Base):
         self.referral_code = self.generate_referral_code()
 
     def generate_referral_code(self):
-        """Генерирует уникальный реферальный код"""
         try:
             while True:
                 code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
@@ -68,7 +69,6 @@ class User(Base):
             raise
 
     def add_stars(self, amount: float):
-        """Добавляет Stars к балансу"""
         try:
             if amount < 0:
                 raise ValueError("Amount cannot be negative")
@@ -81,7 +81,6 @@ class User(Base):
             raise
 
     def remove_stars(self, amount: float):
-        """Снимает Stars с баланса"""
         try:
             if amount < 0:
                 raise ValueError("Amount cannot be negative")
@@ -98,11 +97,9 @@ class User(Base):
             raise
 
     def get_vip_multiplier(self) -> float:
-        """Возвращает множитель для VIP-пользователей"""
         return 1.5 if self.is_vip else 1.0
 
     def add_win(self):
-        """Добавляет победу"""
         try:
             self.wins += 1
             session.commit()
@@ -113,7 +110,6 @@ class User(Base):
             raise
 
     def add_loss(self):
-        """Добавляет поражение"""
         try:
             self.losses += 1
             session.commit()
@@ -124,12 +120,9 @@ class User(Base):
             raise
 
 async def init_db():
-    """Инициализация базы данных"""
     try:
-        # Создаем таблицы
         Base.metadata.create_all(engine)
         
-        # Проверяем наличие колонки last_free_stars_claim
         inspector = inspect(engine)
         columns = [col['name'] for col in inspector.get_columns('users')]
         

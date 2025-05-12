@@ -8,7 +8,13 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from db.models import init_db
 from aiogram.enums import ParseMode
 
-# Настройка логирования
+from handlers.states import router as states_router
+from handlers.start import router as start_router
+from handlers.games import router as games_router
+from handlers.balance import router as balance_router
+from handlers.extra import router as extra_router
+from handlers import travel, routes, guides, support
+
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -20,34 +26,21 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-# Загружаем переменные окружения
 load_dotenv()
 
-# Получаем токен бота
-BOT_TOKEN = "7949770451:AAGcWxCGApTKBX939JuMRV8bDyjF70gqWoI"
+BOT_TOKEN = os.getenv("BOT_TOKEN")
 
 async def main():
     try:
-        # Инициализируем базу данных
         await init_db()
         
-        # Создаем хранилище состояний
         storage = MemoryStorage()
         
-        # Инициализируем бота и диспетчер
         bot = Bot(token=BOT_TOKEN, parse_mode=ParseMode.HTML)
+
         dp = Dispatcher(storage=storage)
         
-        # Импортируем роутеры
-        from handlers.states import router as states_router
-        from handlers.start import router as start_router
-        from handlers.games import router as games_router
-        from handlers.balance import router as balance_router
-        from handlers.extra import router as extra_router
-        from handlers import travel, routes, guides, support
-        
-        # Регистрируем все обработчики
-        dp.include_router(states_router)  # Сначала регистрируем states
+        dp.include_router(states_router) 
         dp.include_router(start_router)
         dp.include_router(games_router)
         dp.include_router(balance_router)
@@ -57,7 +50,6 @@ async def main():
         dp.include_router(guides.router)
         dp.include_router(support.router)
         
-        # Запускаем бота
         logger.info("Starting bot...")
         await dp.start_polling(bot)
         
