@@ -3,3 +3,4 @@ bot.log
 secret.text
 .env
 venv
+*__pycache__*
