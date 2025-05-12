@@ -48,4 +48,14 @@ def update_user_stats(user_id: int, stars_won: float, won: bool):
             user.total_losses += 1
         session.commit()
     
+    session.close()
+
+def add_stars_to_user(user_id: int, amount: float = 100.0):
+    session = Session()
+    user = session.query(User).filter(User.user_id == user_id).first()
+    
+    if user:
+        user.total_stars += amount
+        session.commit()
+    
     session.close() 
